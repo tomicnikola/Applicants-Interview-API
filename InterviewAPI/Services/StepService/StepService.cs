@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections;
 
 namespace InterviewAPI.Services.StepService
 {
@@ -10,33 +11,52 @@ namespace InterviewAPI.Services.StepService
         {
             _context = context;
         }
-        public async Task<List<Step>> AddStep(Step step)
+        public ICollection<Step> AddStep(Step step)
         {
             _context.Steps.Add(step);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
-            return await _context.Steps.ToListAsync();
+            return  _context.Steps.ToList();
         }
 
-        public Task<List<Step>?> DeleteStep(int id)
+        public ICollection<Step>? DeleteStep(int id)
         {
-            throw new NotImplementedException();
+            var step = _context.Steps.Find(id);
+            if (step is null)
+                return null;
+
+            _context.Steps.Remove(step);
+            _context.SaveChanges();
+
+            return _context.Steps.ToList();
         }
 
-        public Task<Step?> GetStep(Step step)
+        public Step? GetStep(int id)
         {
-            throw new NotImplementedException();
+            var step = _context.Steps.Find(id);
+            if (step is null)
+                return null;
+            return step;
         }
 
-        public async Task<List<Step>> GetSteps()
+        public ICollection<Step> GetSteps()
         {
-            var steps = await _context.Steps.ToListAsync();
+            var steps = _context.Steps.ToList();
             return steps;
         }
 
-        public Task<List<Step>?> UpdateStep(Step step)
+        public ICollection<Step>? UpdateStep(Step stepRequest)
         {
-            throw new NotImplementedException();
+            var step = _context.Steps.Find(stepRequest.Id);
+            if (step is null)
+                return null;
+
+            step.Code = stepRequest.Code;
+            step.Name = stepRequest.Name;
+
+            _context.SaveChanges();
+
+            return _context.Steps.ToList();
         }
     }
 }
