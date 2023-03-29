@@ -1,4 +1,5 @@
 global using InterviewAPI.Models;
+using InterviewAPI.Services.JobCategoryService;
 using InterviewAPI.Services.StepService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicantsInterviewContext>();
 builder.Services.AddScoped<IStepService, StepService>();
+builder.Services.AddScoped<IJobCategoryService, JobCategoryService>();
 
 var app = builder.Build();
 

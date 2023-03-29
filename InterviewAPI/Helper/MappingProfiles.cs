@@ -8,6 +8,7 @@ namespace InterviewAPI.Helper
         public MappingProfiles()
         {
             CreateMap<Step, StepDto>();
+            CreateMap<JobCategory, JobCategoryDto>();
         }
     }
 }
