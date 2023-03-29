@@ -9,6 +9,7 @@ namespace InterviewAPI.Helper
         {
             CreateMap<Step, StepDto>();
             CreateMap<JobCategory, JobCategoryDto>();
+            CreateMap<JobPlatform, JobPlatformDto>();
         }
     }
 }
