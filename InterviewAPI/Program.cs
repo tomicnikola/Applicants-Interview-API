@@ -1,6 +1,7 @@
 global using InterviewAPI.Models;
 using InterviewAPI.Services.JobCategoryService;
 using InterviewAPI.Services.JobPlatformService;
+using InterviewAPI.Services.JobPositionService;
 using InterviewAPI.Services.StepService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<ApplicantsInterviewContext>();
 builder.Services.AddScoped<IStepService, StepService>();
 builder.Services.AddScoped<IJobCategoryService, JobCategoryService>();
 builder.Services.AddScoped<IJobPlatformService, JobPlatformService>();
+builder.Services.AddScoped<IJobPositionService, JobPositionService>();
 
 var app = builder.Build();
 

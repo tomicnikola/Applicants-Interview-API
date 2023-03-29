@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InterviewAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/")]
     [ApiController]
     public class JobPlatformController : ControllerBase
     {
