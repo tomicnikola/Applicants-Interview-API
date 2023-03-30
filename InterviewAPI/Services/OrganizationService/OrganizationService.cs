@@ -38,8 +38,8 @@
 
         public ICollection<Organization> GetOrganizations()
         {
-            var organization = _context.Organizations.ToList();
-            return organization;
+            var organizations = _context.Organizations.ToList();
+            return organizations;
         }
 
         public ICollection<Organization>? UpdateOrganization(Organization organizationRequest)

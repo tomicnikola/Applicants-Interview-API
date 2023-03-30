@@ -38,8 +38,8 @@
 
         public ICollection<Applicant> GetApplicants()
         {
-            var applicant = _context.Applicants.ToList();
-            return applicant;
+            var applicants = _context.Applicants.ToList();
+            return applicants;
         }
 
         public ICollection<Applicant>? UpdateApplicant(Applicant applicantRequest)
