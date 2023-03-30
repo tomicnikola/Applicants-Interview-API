@@ -1,4 +1,5 @@
 global using InterviewAPI.Models;
+using InterviewAPI.Services.ApplicantService;
 using InterviewAPI.Services.JobCategoryService;
 using InterviewAPI.Services.JobPlatformService;
 using InterviewAPI.Services.JobPositionService;
@@ -20,6 +21,7 @@ builder.Services.AddScoped<IJobCategoryService, JobCategoryService>();
 builder.Services.AddScoped<IJobPlatformService, JobPlatformService>();
 builder.Services.AddScoped<IJobPositionService, JobPositionService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+builder.Services.AddScoped<IApplicantService, ApplicantService>();
 
 var app = builder.Build();
 
