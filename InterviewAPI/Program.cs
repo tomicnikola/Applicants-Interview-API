@@ -1,11 +1,13 @@
 global using InterviewAPI.Models;
 using InterviewAPI.Services.ApplicantService;
+using InterviewAPI.Services.ApplicationStatusService;
 using InterviewAPI.Services.DocumentService;
 using InterviewAPI.Services.JobCategoryService;
 using InterviewAPI.Services.JobPlatformService;
 using InterviewAPI.Services.JobPositionService;
 using InterviewAPI.Services.OrganizationService;
 using InterviewAPI.Services.StepService;
+using InterviewAPI.Services.TestService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,8 @@ builder.Services.AddScoped<IJobPositionService, JobPositionService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IApplicantService, ApplicantService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<ITestService, TestService>();
+builder.Services.AddScoped<IApplicationStatusService, ApplicationStatusService>();
 
 var app = builder.Build();
 
