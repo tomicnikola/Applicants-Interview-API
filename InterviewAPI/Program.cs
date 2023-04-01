@@ -6,6 +6,7 @@ using InterviewAPI.Services.JobCategoryService;
 using InterviewAPI.Services.JobPlatformService;
 using InterviewAPI.Services.JobPositionService;
 using InterviewAPI.Services.OrganizationService;
+using InterviewAPI.Services.ProcessService;
 using InterviewAPI.Services.RecruiterService;
 using InterviewAPI.Services.StepService;
 using InterviewAPI.Services.TestService;
@@ -30,6 +31,7 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<IApplicationStatusService, ApplicationStatusService>();
 builder.Services.AddScoped<IRecruiterService, RecruiterService>();
+builder.Services.AddScoped<IProcessService, ProcessService>();
 
 var app = builder.Build();
 
