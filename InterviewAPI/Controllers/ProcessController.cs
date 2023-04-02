@@ -52,9 +52,9 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpDelete("processes/{id}")]
-        public IActionResult DeleteProcess(int id)
+        public IActionResult DeleteProcess(Process process)
         {
-            var result = _mapper.Map<List<ProcessDto>>(_processService.DeleteProcess(id));
+            var result = _mapper.Map<List<ProcessDto>>(_processService.DeleteProcess(process));
             if (result is null)
                 return NotFound("Invalid id, try again.");
             return Ok(result);

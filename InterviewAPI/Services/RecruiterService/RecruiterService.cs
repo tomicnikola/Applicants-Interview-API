@@ -47,7 +47,7 @@
 
         public bool UpdateRecruiter(Recruiter recruiterRequest)
         {
-            _context.Add(recruiterRequest);
+            _context.Update(recruiterRequest);
             return Save();
         }
     }
