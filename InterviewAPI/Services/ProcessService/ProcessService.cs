@@ -8,24 +8,16 @@
         {
             _context = context;
         }
-        public ICollection<Process> AddProcess(Process process)
+        public bool AddProcess(Process process)
         {
-            _context.Processes.Add(process);
-            _context.SaveChanges();
-
-            return _context.Processes.ToList();
+            _context.Add(process);
+            return Save();
         }
 
-        public ICollection<Process>? DeleteProcess(int id)
+        public bool DeleteProcess(Process process)
         {
-            var process = _context.Processes.Find(id);
-            if (process is null)
-                return null;
-
-            _context.Processes.Remove(process);
-            _context.SaveChanges();
-
-            return _context.Processes.ToList();
+            _context.Remove(process);
+            return Save();
         }
 
         public Process? GetProcess(int id)
@@ -36,24 +28,36 @@
             return process;
         }
 
+        public Process? GetProcess(string code)
+        {
+            var process = _context.Processes.Where(p => p.Code == code).FirstOrDefault();
+            if (process is null)
+                return null;
+            return process; 
+        }
+
         public ICollection<Process> GetProcesses()
         {
             var processes = _context.Processes.ToList();
             return processes;
         }
 
-        public ICollection<Process>? UpdateProcess(Process processRequest)
+        public bool ProcessExists(int id)
         {
-            var process = _context.Processes.Find(processRequest.Id);
-            if (process is null)
-                return null;
-
-            process.Code = processRequest.Code;
-            process.Description = processRequest.Description;
-            process.Recruiter = processRequest.Recruiter;
-
-            _context.SaveChanges();
-            return _context.Processes.ToList();
+            return _context.Processes.Any(p => p.Id == id);
         }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
+
+        public bool UpdateProcess(Process processRequest)
+        {
+            _context.Update(processRequest);
+            return Save();
+        }
+
     }
 }

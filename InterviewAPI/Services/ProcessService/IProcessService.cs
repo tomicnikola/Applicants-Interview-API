@@ -2,10 +2,13 @@
 {
     public interface IProcessService
     {
-        ICollection<Process> AddProcess(Process process);
+        bool AddProcess(Process process);
         ICollection<Process> GetProcesses();
         Process? GetProcess(int id);
-        ICollection<Process>? UpdateProcess(Process processRequest);
-        ICollection<Process>? DeleteProcess(int id);
+        Process? GetProcess(string code);
+        bool UpdateProcess(Process process);
+        bool DeleteProcess(Process process);
+        bool ProcessExists(int id);
+        bool Save();
     }
 }

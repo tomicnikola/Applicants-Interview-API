@@ -19,6 +19,7 @@ namespace InterviewAPI.Helper
             CreateMap<TestDto, Test>();
             CreateMap<ApplicationStatus, ApplicationStatusDto>();
             CreateMap<Recruiter, RecruiterDto>();
+            CreateMap<RecruiterDto, Recruiter>();
             CreateMap<Process, ProcessDto>();
         }
     }

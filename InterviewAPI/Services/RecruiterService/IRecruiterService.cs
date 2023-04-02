@@ -2,10 +2,12 @@
 {
     public interface IRecruiterService
     {
-        ICollection<Recruiter> AddRecruiter(Recruiter recruiter);
+        bool AddRecruiter(Recruiter test);
         ICollection<Recruiter> GetRecruiters();
         Recruiter? GetRecruiter(int id);
-        ICollection<Recruiter>? UpdateRecruiter(Recruiter recruiterRequest);
-        ICollection<Recruiter>? DeleteRecruiter(int id);
+        bool UpdateRecruiter(Recruiter test);
+        bool DeleteRecruiter(Recruiter test);
+        bool RecruiterExists(int id);
+        bool Save();
     }
 }

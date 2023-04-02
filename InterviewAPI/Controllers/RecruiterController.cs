@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InterviewAPI.Dto;
+using InterviewAPI.Models;
 using InterviewAPI.Services.RecruiterService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,28 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPost("recruiters")]
-        public IActionResult AddRecruiter(Recruiter recruiter)
+        public IActionResult AddRecruiter([FromBody] RecruiterDto recruiterAdd)
         {
-            var result = _mapper.Map<List<RecruiterDto>>(_recruiterService.AddRecruiter(recruiter));
-            return Ok(result);
+            if (recruiterAdd is null)
+                return BadRequest(ModelState);
+
+            var test = _recruiterService.GetRecruiter(recruiterAdd.Id);
+
+            if (test is not null)
+            {
+                ModelState.AddModelError("", "Recruiter already exists.");
+                return StatusCode(403, ModelState);
+            }
+
+            var recruiterMap = _mapper.Map<Recruiter>(recruiterAdd);
+
+            if (!_recruiterService.AddRecruiter(recruiterMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Succesfully added a recruiter.");
         }
 
         [HttpGet("recruiters")]
@@ -44,19 +63,38 @@ namespace InterviewAPI.Controllers
         [HttpPut("recruiters")]
         public IActionResult UpdateRecruiter(Recruiter recruiter)
         {
-            var result = _mapper.Map<List<RecruiterDto>>(_recruiterService.UpdateRecruiter(recruiter));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (recruiter is null)
+                return BadRequest(ModelState);
+
+            if (!_recruiterService.RecruiterExists(recruiter.Id))
+                return NotFound("Recruiter doesn't exist.");
+
+            var recruiterMap = _mapper.Map<Recruiter>(recruiter);
+
+            if (!_recruiterService.UpdateRecruiter(recruiterMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating recruiter");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Recruiter succesfully updated.");
         }
 
         [HttpDelete("recruiters/{id}")]
         public IActionResult DeleteRecruiter(int id)
         {
-            var result = _mapper.Map<List<RecruiterDto>>(_recruiterService.DeleteRecruiter(id));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (!_recruiterService.RecruiterExists(id))
+                return NotFound("Test doesn't exist.");
+
+            var recruiterToDelete = _recruiterService.GetRecruiter(id);
+
+            if (!_recruiterService.DeleteRecruiter(recruiterToDelete))
+            {
+                ModelState.AddModelError("", "Something went wront deleting step");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Test succesfully deleted.");
         }
     }
 }

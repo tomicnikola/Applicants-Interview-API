@@ -8,24 +8,16 @@
         {
             _context = context;
         }
-        public ICollection<Recruiter> AddRecruiter(Recruiter recruiter)
+        public bool AddRecruiter(Recruiter recruiter)
         {
-            _context.Recruiters.Add(recruiter);
-            _context.SaveChanges();
-
-            return _context.Recruiters.ToList();
+            _context.Add(recruiter);
+            return Save();
         }
 
-        public ICollection<Recruiter>? DeleteRecruiter(int id)
+        public bool DeleteRecruiter(Recruiter recruiter)
         {
-            var recruiter = _context.Recruiters.Find(id);
-            if (recruiter is null)
-                return null; 
-        
-            _context.Recruiters.Remove(recruiter);
-            _context.SaveChanges();
-
-            return _context.Recruiters.ToList();
+            _context.Remove(recruiter);
+            return Save();
         }
 
         public Recruiter? GetRecruiter(int id)
@@ -42,17 +34,21 @@
             return recruiters;
         }
 
-        public ICollection<Recruiter>? UpdateRecruiter(Recruiter recruiterRequest)
+        public bool RecruiterExists(int id)
         {
-            var recruiter = _context.Recruiters.Find(recruiterRequest.Id);
-            if (recruiter is null)
-                return null;
+            return _context.Recruiters.Any(r => r.Id == id);
+        }
 
-            recruiter.FirstName = recruiterRequest.FirstName;
-            recruiter.LastName = recruiterRequest.LastName;
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
-            _context.SaveChanges();
-            return _context.Recruiters.ToList();
+        public bool UpdateRecruiter(Recruiter recruiterRequest)
+        {
+            _context.Add(recruiterRequest);
+            return Save();
         }
     }
 }
