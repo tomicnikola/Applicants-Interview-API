@@ -2,10 +2,13 @@
 {
     public interface ITestService
     {
-        ICollection<Test> AddTest(Test test);
+        bool AddTest(Test test);
         ICollection<Test> GetTests();
         Test? GetTest(int id);
-        ICollection<Test>? UpdateTest(Test testRequest);
-        ICollection<Test>? DeleteTest(int id);
+        Test? GetTest(string code);
+        bool UpdateTest(Test test);
+        bool DeleteTest(Test test);
+        bool TestExists(int id);
+        bool Save();
     }
 }

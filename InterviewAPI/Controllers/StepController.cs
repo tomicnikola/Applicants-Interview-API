@@ -80,7 +80,7 @@ namespace InterviewAPI.Controllers
 
             if (!_stepService.DeleteStep(stepToDelete))
             {
-                ModelState.AddModelError("", "Something went wront updating step");
+                ModelState.AddModelError("", "Something went wront deleting step");
                 return StatusCode(500, ModelState);
             }
 

@@ -8,29 +8,29 @@
         {
             _context = context;
         }
-        public ICollection<Test> AddTest(Test test)
+        public bool AddTest(Test test)
         {
-            _context.Tests.Add(test);
-            _context.SaveChanges();
-
-            return _context.Tests.ToList();
+            _context.Add(test);
+            return Save();
         }
 
-        public ICollection<Test>? DeleteTest(int id)
+        public bool DeleteTest(Test test)
         {
-            var test = _context.Tests.Find(id);
-            if (test is null)
-                return null;
-
-            _context.Tests.Remove(test);
-            _context.SaveChanges();
-
-            return _context.Tests.ToList();
+            _context.Remove(test);
+            return Save();
         }
 
         public Test? GetTest(int id)
         {
             var test = _context.Tests.Find(id);
+            if (test is null)
+                return null;
+            return test;
+        }
+
+        public Test? GetTest(string code)
+        {
+            var test = _context.Tests.Where(s => s.Code == code).FirstOrDefault();
             if (test is null)
                 return null;
             return test;
@@ -42,18 +42,21 @@
             return tests;
         }
 
-        public ICollection<Test>? UpdateTest(Test testRequest)
+        public bool Save()
         {
-            var test = _context.Tests.Find(testRequest.Id);
-            if (test is null)
-                return null;
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
-            test.Code = testRequest.Code;
-            test.Duration = testRequest.Duration;
-            test.MaxScore = testRequest.MaxScore;
+        public bool TestExists(int id)
+        {
+            return _context.Tests.Any(t => t.Id == id);
+        }
 
-            _context.SaveChanges();
-            return _context.Tests.ToList();
+        public bool UpdateTest(Test testRequest)
+        {
+            _context.Update(testRequest);
+            return Save();
         }
     }
 }
