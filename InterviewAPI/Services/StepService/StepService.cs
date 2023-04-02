@@ -11,29 +11,29 @@ namespace InterviewAPI.Services.StepService
         {
             _context = context;
         }
-        public ICollection<Step> AddStep(Step step)
+        public bool AddStep(Step step)
         {
-            _context.Steps.Add(step);
-            _context.SaveChanges();
-
-            return  _context.Steps.ToList();
+            _context.Add(step);
+            return Save();
         }
 
-        public ICollection<Step>? DeleteStep(int id)
+        public bool DeleteStep(Step step)
         {
-            var step = _context.Steps.Find(id);
-            if (step is null)
-                return null;
-
-            _context.Steps.Remove(step);
-            _context.SaveChanges();
-
-            return _context.Steps.ToList();
+            _context.Remove(step);
+            return Save();
         }
 
         public Step? GetStep(int id)
         {
             var step = _context.Steps.Find(id);
+            if (step is null)
+                return null;
+            return step;
+        }
+
+        public Step? GetStep(string code)
+        {
+            var step = _context.Steps.Where(s => s.Code == code).FirstOrDefault();
             if (step is null)
                 return null;
             return step;
@@ -45,18 +45,21 @@ namespace InterviewAPI.Services.StepService
             return steps;
         }
 
-        public ICollection<Step>? UpdateStep(Step stepRequest)
+        public bool Save()
         {
-            var step = _context.Steps.Find(stepRequest.Id);
-            if (step is null)
-                return null;
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
-            step.Code = stepRequest.Code;
-            step.Name = stepRequest.Name;
+        public bool StepExists(int id)
+        {
+            return _context.Steps.Any(s => s.Id == id);
+        }
 
-            _context.SaveChanges();
-
-            return _context.Steps.ToList();
+        public bool UpdateStep(Step stepRequest)
+        {
+            _context.Update(stepRequest);
+            return Save();
         }
     }
 }

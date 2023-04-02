@@ -10,6 +10,5 @@
 
         public int RecruiterId { get; set; }
 
-        public virtual Recruiter Recruiter { get; set; } = null!;
     }
 }

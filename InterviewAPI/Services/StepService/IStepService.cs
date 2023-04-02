@@ -2,10 +2,13 @@
 {
     public interface IStepService
     {
-        ICollection<Step> AddStep(Step step);
+        bool AddStep(Step step);
         ICollection<Step> GetSteps();
         Step? GetStep(int id);
-        ICollection<Step>? UpdateStep(Step stepRequest);
-        ICollection<Step>? DeleteStep(int id);
+        Step? GetStep(string code);
+        bool UpdateStep(Step step);
+        bool DeleteStep(Step step);
+        bool StepExists(int id);
+        bool Save();
     }
 }
