@@ -37,7 +37,7 @@ namespace InterviewAPI.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Succesfully added a application status.");
+            return Ok("Succesfully added an application status.");
         }
 
         [HttpGet("applicationStatuses")]

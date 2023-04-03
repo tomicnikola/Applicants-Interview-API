@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InterviewAPI.Dto;
+using InterviewAPI.Models;
 using InterviewAPI.Services.ApplicantService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,23 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPost("applicants")]
-        public IActionResult AddApplicant(Applicant applicant)
+        public IActionResult AddApplicant([FromBody] ApplicantDto applicantAdd)
         {
-            var result = _mapper.Map<List<ApplicantDto>>(_applicantService.AddApplicant(applicant));
-            return Ok(result);
+            if (applicantAdd is null)
+                return BadRequest(ModelState);
+
+            if (_applicantService.ApplicantExists(applicantAdd.Id))
+                return NotFound("Applicant already exists by that id.");
+
+            var applicantMap = _mapper.Map<Applicant>(applicantAdd);
+
+            if (!_applicantService.AddApplicant(applicantMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Succesfully added an applicant.");
         }
 
         [HttpGet("applicants")]
@@ -43,21 +57,40 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPut("applicants")]
-        public IActionResult UpdateApplicant(Applicant applicant)
+        public IActionResult UpdateApplicant([FromBody] ApplicantDto applicant)
         {
-            var result = _mapper.Map<List<ApplicantDto>>(_applicantService.UpdateApplicant(applicant));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (applicant is null)
+                return BadRequest(ModelState);
+
+            if (!_applicantService.ApplicantExists(applicant.Id))
+                return NotFound("Applicant doesn't exist.");
+
+            var applicantMap = _mapper.Map<Applicant>(applicant);
+
+            if (!_applicantService.UpdateApplicant(applicantMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating applicant");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Applicant succesfully updated.");
         }
 
         [HttpDelete("applicants/{id}")]
         public IActionResult DeleteApplicant(int id)
         {
-            var result = _mapper.Map<List<ApplicantDto>>(_applicantService.DeleteApplicant(id));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (!_applicantService.ApplicantExists(id))
+                return NotFound("Applicant doesn't exist.");
+
+            var organizationToDelete = _applicantService.GetApplicant(id);
+
+            if (!_applicantService.DeleteApplicant(organizationToDelete))
+            {
+                ModelState.AddModelError("", "Something went wront deleting applicant");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Applicant succesfully deleted.");
         }
     }
 }

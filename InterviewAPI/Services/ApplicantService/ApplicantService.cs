@@ -1,4 +1,6 @@
-﻿namespace InterviewAPI.Services.ApplicantService
+﻿using Microsoft.EntityFrameworkCore.Internal;
+
+namespace InterviewAPI.Services.ApplicantService
 {
     public class ApplicantService : IApplicantService
     {
@@ -8,24 +10,21 @@
         {
             _context = context;
         }
-        public ICollection<Applicant> AddApplicant(Applicant applicant)
+        public bool AddApplicant(Applicant applicant)
         {
-            _context.Applicants.Add(applicant);
-            _context.SaveChanges();
-
-            return _context.Applicants.ToList();
+            _context.Add(applicant);
+            return Save();
         }
 
-        public ICollection<Applicant>? DeleteApplicant(int id)
+        public bool ApplicantExists(int id)
         {
-            var applicant = _context.Applicants.Find(id);
-            if (applicant is null)
-                return null;
+            return _context.Applicants.Any(a => a.Id == id);
+        }
 
-            _context.Applicants.Remove(applicant);
-            _context.SaveChanges();
-
-            return _context.Applicants.ToList();
+        public bool DeleteApplicant(Applicant applicant)
+        {
+            _context.Remove(applicant);
+            return Save();
         }
 
         public Applicant? GetApplicant(int id)
@@ -42,20 +41,16 @@
             return applicants;
         }
 
-        public ICollection<Applicant>? UpdateApplicant(Applicant applicantRequest)
+        public bool Save()
         {
-            var applicant = _context.Applicants.Find(applicantRequest.Id);
-            if (applicant is null)
-                return null;
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
-            applicant.FirstName = applicantRequest.FirstName;
-            applicant.LastName = applicantRequest.LastName;
-            applicant.Email = applicantRequest.Email;
-            applicant.Phone = applicantRequest.Phone;
-            applicant.Summary = applicantRequest.Summary;
-
-            _context.SaveChanges();
-            return _context.Applicants.ToList();
+        public bool UpdateApplicant(Applicant applicant)
+        {
+            _context.Update(applicant);
+            return Save();
         }
     }
 }
