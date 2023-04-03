@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InterviewAPI.Dto;
+using InterviewAPI.Models;
 using InterviewAPI.Services.JobPositionService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +20,28 @@ namespace InterviewAPI.Controllers
             _mapper = mapper;
         }
         [HttpPost("jobPositions")]
-        public IActionResult AddJobPosition(JobPosition jobPosition)
+        public IActionResult AddJobPosition([FromBody] JobPositionDto jobPositionAdd)
         {
-            var result = _mapper.Map<List<JobPositionDto>>(_jobPositionService.AddJobPosition(jobPosition));
-            return Ok(result);
+            if (jobPositionAdd is null)
+                return BadRequest(ModelState);
+
+            var jobPosition = _jobPositionService.GetJobPosition(jobPositionAdd.Id);
+
+            if (jobPosition is not null)
+            {
+                ModelState.AddModelError("", "Job position already exists.");
+                return StatusCode(403, ModelState);
+            }
+
+            var jobPositionMap = _mapper.Map<JobPosition>(jobPositionAdd);
+
+            if (!_jobPositionService.AddJobPosition(jobPositionMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Succesfully added a job position.");
         }
 
         [HttpGet("jobPositions")]
@@ -42,21 +61,40 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPut("jobPositions")]
-        public IActionResult UpdateJobPosition(JobPosition jobPositionRequest)
+        public IActionResult UpdateJobPosition([FromBody] JobPositionDto jobPosition)
         {
-            var result = _mapper.Map<List<JobPositionDto>>(_jobPositionService.UpdateJobPosition(jobPositionRequest));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (jobPosition is null)
+                return BadRequest(ModelState);
+
+            if (!_jobPositionService.JobPositionExists(jobPosition.Id))
+                return NotFound("Job position doesn't exist.");
+
+            var jobPositionMap = _mapper.Map<JobPosition>(jobPosition);
+
+            if (!_jobPositionService.UpdateJobPosition(jobPositionMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating job position");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Job position succesfully updated.");
         }
 
         [HttpDelete("jobPositions/{id}")]
         public IActionResult DeleteJobPosition(int id)
         {
-            var result = _mapper.Map<List<JobPositionDto>>(_jobPositionService.DeleteJobPosition(id));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (!_jobPositionService.JobPositionExists(id))
+                return NotFound("Job position doesn't exist.");
+
+            var jobPositionToDelete = _jobPositionService.GetJobPosition(id);
+
+            if (!_jobPositionService.DeleteJobPosition(jobPositionToDelete))
+            {
+                ModelState.AddModelError("", "Something went wront deleting job position");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Job position succesfully deleted.");
         }
     }
 }

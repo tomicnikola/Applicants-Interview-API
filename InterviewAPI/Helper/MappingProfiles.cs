@@ -12,6 +12,7 @@ namespace InterviewAPI.Helper
             CreateMap<JobCategory, JobCategoryDto>();
             CreateMap<JobPlatform, JobPlatformDto>();
             CreateMap<JobPosition, JobPositionDto>();
+            CreateMap<JobPositionDto, JobPosition>();
             CreateMap<Organization, OrganizationDto>();
             CreateMap<OrganizationDto, Organization>();
             CreateMap<Applicant, ApplicantDto>();

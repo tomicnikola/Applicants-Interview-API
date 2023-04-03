@@ -11,24 +11,16 @@ namespace InterviewAPI.Services.JobPositionService
             _context = context;
         }
 
-        public ICollection<JobPosition> AddJobPosition(JobPosition jobPosition)
+        public bool AddJobPosition(JobPosition jobPosition)
         {
-            _context.JobPositions.Add(jobPosition);
-            _context.SaveChanges();
-
-            return _context.JobPositions.ToList();
+            _context.Add(jobPosition);
+            return Save();
         }
 
-        public ICollection<JobPosition>? DeleteJobPosition(int id)
+        public bool DeleteJobPosition(JobPosition jobPosition)
         {
-            var jobPosition = _context.JobPositions.Find(id);
-            if (jobPosition is null)
-                return null;
-            
-            _context.JobPositions.Remove(jobPosition);
-            _context.SaveChanges();
-
-            return _context.JobPositions.ToList();
+            _context.Remove(jobPosition);
+            return Save();
         }
 
         public JobPosition? GetJobPosition(int id)
@@ -45,18 +37,21 @@ namespace InterviewAPI.Services.JobPositionService
             return jobPositions;
         }
 
-        public ICollection<JobPosition>? UpdateJobPosition(JobPosition jobPositionRequest)
+        public bool JobPositionExists(int id)
         {
-            var jobPosition = _context.JobPositions.Find(jobPositionRequest.Id);
-            if (jobPosition is null)
-                return null;
+            return _context.JobPositions.Any(j => j.Id == id);
+        }
 
-            jobPosition.Code = jobPositionRequest.Code;
-            jobPosition.Name = jobPositionRequest.Name;
-            jobPosition.Description = jobPositionRequest.Description;
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
-            _context.SaveChanges();
-            return _context.JobPositions.ToList();
+        public bool UpdateJobPosition(JobPosition jobPosition)
+        {
+            _context.Update(jobPosition);
+            return Save();
         }
     }
 }

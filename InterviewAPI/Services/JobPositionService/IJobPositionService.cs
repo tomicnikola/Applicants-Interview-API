@@ -2,10 +2,12 @@
 {
     public interface IJobPositionService
     {
-        ICollection<JobPosition> AddJobPosition(JobPosition jobPosition);
+        bool AddJobPosition(JobPosition jobPosition);
         ICollection<JobPosition> GetJobPositions();
         JobPosition? GetJobPosition(int id);
-        ICollection<JobPosition>? UpdateJobPosition(JobPosition jobPositionRequest);
-        ICollection<JobPosition>? DeleteJobPosition(int id);
+        bool UpdateJobPosition(JobPosition jobPosition);
+        bool DeleteJobPosition(JobPosition jobPosition);
+        bool JobPositionExists(int id);
+        bool Save();
     }
 }
