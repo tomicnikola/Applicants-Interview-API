@@ -2,10 +2,12 @@
 {
     public interface IDocumentService
     {
-        ICollection<Document> AddDocument(Document document);
+        bool AddDocument(Document document);
         ICollection<Document> GetDocuments();
         Document? GetDocument(int id);
-        ICollection<Document>? UpdateDocument(Document documentRequest);
-        ICollection<Document>? DeleteDocument(int id);
+        bool UpdateDocument(Document document);
+        bool DeleteDocument(Document document);
+        bool DocumentExists(int id);
+        bool Save();
     }
 }

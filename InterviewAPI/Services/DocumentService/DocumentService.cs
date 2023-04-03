@@ -8,24 +8,21 @@
         {
             _context = context;
         }
-        public ICollection<Document> AddDocument(Document document)
+        public bool AddDocument(Document document)
         {
-            _context.Documents.Add(document);
-            _context.SaveChanges();
-
-            return _context.Documents.ToList();
+            _context.Add(document);
+            return Save();
         }
 
-        public ICollection<Document>? DeleteDocument(int id)
+        public bool DeleteDocument(Document document)
         {
-            var document = _context.Documents.Find(id);
-            if (document is null)
-                return null;
+            _context.Remove(document);
+            return Save();
+        }
 
-            _context.Documents.Remove(document);
-            _context.SaveChanges();
-
-            return _context.Documents.ToList();
+        public bool DocumentExists(int id)
+        {
+            return _context.Documents.Any(d => d.Id == id);
         }
 
         public Document? GetDocument(int id)
@@ -42,20 +39,16 @@
             return documents;
         }
 
-        public ICollection<Document>? UpdateDocument(Document documentRequest)
+        public bool Save()
         {
-            var document = _context.Documents.Find(documentRequest.Id);
-            if (document is null)
-                return null;
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
-            document.Name = documentRequest.Name;
-            document.Document1 = documentRequest.Document1;
-            document.Url = documentRequest.Url;
-            document.LastUpdate = documentRequest.LastUpdate;
-
-            _context.SaveChanges();
-            return _context.Documents.ToList();
-
+        public bool UpdateDocument(Document document)
+        {
+            _context.Update(document);
+            return Save();
         }
     }
 }

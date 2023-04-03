@@ -82,9 +82,9 @@ namespace InterviewAPI.Controllers
             if (!_applicantService.ApplicantExists(id))
                 return NotFound("Applicant doesn't exist.");
 
-            var organizationToDelete = _applicantService.GetApplicant(id);
+            var applicantToDelete = _applicantService.GetApplicant(id);
 
-            if (!_applicantService.DeleteApplicant(organizationToDelete))
+            if (!_applicantService.DeleteApplicant(applicantToDelete))
             {
                 ModelState.AddModelError("", "Something went wront deleting applicant");
                 return StatusCode(500, ModelState);
