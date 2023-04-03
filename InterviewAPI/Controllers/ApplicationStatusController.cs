@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InterviewAPI.Dto;
+using InterviewAPI.Models;
 using InterviewAPI.Services.ApplicationStatusService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,23 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPost("applicationStatuses")]
-        public IActionResult AddApplicationStatus(ApplicationStatus applicationStatus)
+        public IActionResult AddApplicationStatus([FromBody] ApplicationStatusDto applicationStatusAdd)
         {
-            var result = _mapper.Map<List<ApplicationStatusDto>>(_applicationStatusService.AddApplicationStatus(applicationStatus));
-            return Ok(result);
+            if (applicationStatusAdd is null)
+                return BadRequest(ModelState);
+
+            if (_applicationStatusService.ApplicationStatusExists(applicationStatusAdd.Id))
+                return NotFound("Application status already exists by that id.");
+
+            var applicationStatusMap = _mapper.Map<ApplicationStatus>(applicationStatusAdd);
+
+            if (!_applicationStatusService.AddApplicationStatus(applicationStatusMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Succesfully added a application status.");
         }
 
         [HttpGet("applicationStatuses")]
@@ -43,21 +57,40 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPut("applicationStatuses")]
-        public IActionResult UpdateApplicationStatus(ApplicationStatus applicationStatus)
+        public IActionResult UpdateApplicationStatus([FromBody] ApplicationStatusDto applicationStatus)
         {
-            var result = _mapper.Map<List<ApplicationStatusDto>>(_applicationStatusService.UpdateApplicationStatus(applicationStatus));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (applicationStatus is null)
+                return BadRequest(ModelState);
+
+            if (!_applicationStatusService.ApplicationStatusExists(applicationStatus.Id))
+                return NotFound("Application status doesn't exist.");
+
+            var applicationStatusMap = _mapper.Map<ApplicationStatus>(applicationStatus);
+
+            if (!_applicationStatusService.UpdateApplicationStatus(applicationStatusMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating application status");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Application status succesfully updated.");
         }
 
         [HttpDelete("applicationStatuses/{id}")]
         public IActionResult DeleteApplicationStatus(int id)
         {
-            var result = _mapper.Map<List<ApplicationStatusDto>>(_applicationStatusService.DeleteApplicationStatus(id));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (!_applicationStatusService.ApplicationStatusExists(id))
+                return NotFound("Application status doesn't exist.");
+
+            var applicationStatusToDelete = _applicationStatusService.GetApplicationStatus(id);
+
+            if (!_applicationStatusService.DeleteApplicationStatus(applicationStatusToDelete))
+            {
+                ModelState.AddModelError("", "Something went wront deleting applicaiton status");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Application status succesfully deleted.");
         }
     }
 }

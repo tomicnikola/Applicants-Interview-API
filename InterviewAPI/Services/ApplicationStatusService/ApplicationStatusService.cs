@@ -8,24 +8,21 @@
         {
             _context = context;
         }
-        public ICollection<ApplicationStatus> AddApplicationStatus(ApplicationStatus applicationStatus)
+        public bool AddApplicationStatus(ApplicationStatus applicationStatus)
         {
-            _context.ApplicationStatuses.Add(applicationStatus);
-            _context.SaveChanges();
-
-            return _context.ApplicationStatuses.ToList();
+            _context.Add(applicationStatus);
+            return Save();
         }
 
-        public ICollection<ApplicationStatus>? DeleteApplicationStatus(int id)
+        public bool ApplicationStatusExists(int id)
         {
-            var applicationStatus = _context.ApplicationStatuses.Find(id);
-            if (applicationStatus is null)
-                return null;
-            
-            _context.ApplicationStatuses.Remove(applicationStatus);
-            _context.SaveChanges();
+            return _context.ApplicationStatuses.Any(a => a.Id == id);  
+        }
 
-            return _context.ApplicationStatuses.ToList();
+        public bool DeleteApplicationStatus(ApplicationStatus applicationStatus)
+        {
+            _context.Remove(applicationStatus);
+            return Save();
         }
 
         public ApplicationStatus? GetApplicationStatus(int id)
@@ -42,16 +39,16 @@
             return applicationStatuses;
         }
 
-        public ICollection<ApplicationStatus>? UpdateApplicationStatus(ApplicationStatus applicationStatusRequest)
+        public bool Save()
         {
-            var applicationStatus = _context.ApplicationStatuses.Find(applicationStatusRequest.Id);
-            if (applicationStatus is null)
-                return null;
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
-            applicationStatus.Status = applicationStatusRequest.Status;
-
-            _context.SaveChanges();
-            return _context.ApplicationStatuses.ToList();
+        public bool UpdateApplicationStatus(ApplicationStatus applicationStatus)
+        {
+            _context.Update(applicationStatus);
+            return Save();
         }
     }
 }

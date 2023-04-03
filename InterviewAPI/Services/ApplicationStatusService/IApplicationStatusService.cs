@@ -2,10 +2,12 @@
 {
     public interface IApplicationStatusService
     {
-        ICollection<ApplicationStatus> AddApplicationStatus(ApplicationStatus applicationStatus);
+        bool AddApplicationStatus(ApplicationStatus applicationStatus);
         ICollection<ApplicationStatus> GetApplicationStatuses();
         ApplicationStatus? GetApplicationStatus(int id);
-        ICollection<ApplicationStatus>? UpdateApplicationStatus(ApplicationStatus applicationStatusRequest);
-        ICollection<ApplicationStatus>? DeleteApplicationStatus(int id);
+        bool UpdateApplicationStatus(ApplicationStatus applicationStatus);
+        bool DeleteApplicationStatus(ApplicationStatus applicationStatus);
+        bool ApplicationStatusExists(int id);
+        bool Save();
     }
 }
