@@ -26,13 +26,8 @@ namespace InterviewAPI.Controllers
             if (jobPlatformAdd is null)
                 return BadRequest(ModelState);
 
-            var jobPlatform = _jobPlatformService.GetJobPlatform(jobPlatformAdd.Id);
-
-            if (jobPlatform is not null)
-            {
-                ModelState.AddModelError("", "Job platform already exists.");
-                return StatusCode(403, ModelState);
-            }
+            if (_jobPlatformService.JobPlatformExists(jobPlatformAdd.Id))
+                return NotFound("Job platform already exists by that id.");
 
             var jobPlatformMap = _mapper.Map<JobPlatform>(jobPlatformAdd);
 

@@ -25,13 +25,8 @@ namespace InterviewAPI.Controllers
             if (jobPositionAdd is null)
                 return BadRequest(ModelState);
 
-            var jobPosition = _jobPositionService.GetJobPosition(jobPositionAdd.Id);
-
-            if (jobPosition is not null)
-            {
-                ModelState.AddModelError("", "Job position already exists.");
-                return StatusCode(403, ModelState);
-            }
+            if (_jobPositionService.JobPositionExists(jobPositionAdd.Id))
+                return NotFound("Job position already exists by that id.");
 
             var jobPositionMap = _mapper.Map<JobPosition>(jobPositionAdd);
 

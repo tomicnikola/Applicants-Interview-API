@@ -26,13 +26,8 @@ namespace InterviewAPI.Controllers
             if (recruiterAdd is null)
                 return BadRequest(ModelState);
 
-            var test = _recruiterService.GetRecruiter(recruiterAdd.Id);
-
-            if (test is not null)
-            {
-                ModelState.AddModelError("", "Recruiter already exists.");
-                return StatusCode(403, ModelState);
-            }
+            if (_recruiterService.RecruiterExists(recruiterAdd.Id))
+                return NotFound("Recruiter already exists by that id.");
 
             var recruiterMap = _mapper.Map<Recruiter>(recruiterAdd);
 

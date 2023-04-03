@@ -26,13 +26,8 @@ namespace InterviewAPI.Controllers
             if (testAdd is null)
                 return BadRequest(ModelState);
 
-            var test = _testService.GetTest(testAdd.Id);
-
-            if (test is not null)
-            {
-                ModelState.AddModelError("", "Test already exists.");
-                return StatusCode(403, ModelState);
-            }
+            if (_testService.TestExists(testAdd.Id))
+                return NotFound("Test already exists by that id.");
 
             var testMap = _mapper.Map<Test>(testAdd);
 

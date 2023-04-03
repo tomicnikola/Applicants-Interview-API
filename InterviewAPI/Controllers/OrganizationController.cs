@@ -26,13 +26,8 @@ namespace InterviewAPI.Controllers
             if (organizationAdd is null)
                 return BadRequest(ModelState);
 
-            var organization = _organizationService.GetOrganization(organizationAdd.Id);
-
-            if (organization is not null)
-            {
-                ModelState.AddModelError("", "Organization already exists.");
-                return StatusCode(403, ModelState);
-            }
+            if (_organizationService.OrganizationExists(organizationAdd.Id))
+                return NotFound("Organization already exists by that id.");
 
             var organizationMap = _mapper.Map<Organization>(organizationAdd);
 

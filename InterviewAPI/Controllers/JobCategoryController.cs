@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InterviewAPI.Dto;
+using InterviewAPI.Models;
 using InterviewAPI.Services.JobCategoryService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,23 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPost("jobCategories")]
-        public IActionResult AddJobCategory(JobCategory jobCategory)
+        public IActionResult AddJobCategory([FromBody] JobCategoryDto jobCategoryAdd)
         {
-            var result = _mapper.Map<List<JobCategoryDto>>(_jobCategoryService.AddJobCategory(jobCategory));
-            return Ok(result);
+            if (jobCategoryAdd is null)
+                return BadRequest(ModelState);
+
+            if (_jobCategoryService.JobCategoryExists(jobCategoryAdd.Id))
+                return NotFound("Job category already exists by that id.");
+
+            var jobCategoryMap = _mapper.Map<JobCategory>(jobCategoryAdd);
+
+            if (!_jobCategoryService.AddJobCategory(jobCategoryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Succesfully added a job category.");
         }
 
         [HttpGet("jobCategories")]
@@ -43,21 +57,40 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPut("jobCategories")]
-        public IActionResult UpdateJobCategory(JobCategory jobCategoryRequest)
+        public IActionResult UpdateJobCategory([FromBody] JobCategoryDto jobCategory)
         {
-            var result = _mapper.Map<List<JobCategoryDto>>(_jobCategoryService.UpdateJobCategory(jobCategoryRequest));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (jobCategory is null)
+                return BadRequest(ModelState);
+
+            if (!_jobCategoryService.JobCategoryExists(jobCategory.Id))
+                return NotFound("Job category doesn't exist.");
+
+            var jobCategoryMap = _mapper.Map<JobCategory>(jobCategory);
+
+            if (!_jobCategoryService.UpdateJobCategory(jobCategoryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating job category");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Job category succesfully updated.");
         }
 
         [HttpDelete("jobCategories/{id}")]
         public IActionResult DeleteJobCategory(int id)
         {
-            var result = _mapper.Map<List<JobCategoryDto>>(_jobCategoryService.DeleteJobCategory(id));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (!_jobCategoryService.JobCategoryExists(id))
+                return NotFound("Job category doesn't exist.");
+
+            var jobCategoryToDelete = _jobCategoryService.GetJobCategory(id);
+
+            if (!_jobCategoryService.DeleteJobCategory(jobCategoryToDelete))
+            {
+                ModelState.AddModelError("", "Something went wront deleting job category");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Job category succesfully deleted.");
         }
     }
 }

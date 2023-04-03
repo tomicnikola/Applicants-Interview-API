@@ -2,10 +2,12 @@
 {
     public interface IJobCategoryService
     {
-        ICollection<JobCategory> AddJobCategory(JobCategory jobCategory);
+        bool AddJobCategory(JobCategory jobCategory);
         ICollection<JobCategory> GetJobCategories();
         JobCategory? GetJobCategory(int id);
-        ICollection<JobCategory>? UpdateJobCategory(JobCategory jobCategoryRequest);
-        ICollection<JobCategory>? DeleteJobCategory(int id);
+        bool UpdateJobCategory(JobCategory jobCategory);
+        bool DeleteJobCategory(JobCategory jobCategory);
+        bool JobCategoryExists(int id);
+        bool Save();
     }
 }

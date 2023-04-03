@@ -26,14 +26,9 @@ namespace InterviewAPI.Controllers
             if (stepAdd is null)
                 return BadRequest(ModelState);
 
-            var step = _stepService.GetStep(stepAdd.Id);
+            if (_stepService.StepExists(stepAdd.Id))
+                return NotFound("Step already exists by that id.");
 
-            if (step is not null)
-            {
-                ModelState.AddModelError("", "Step already exists.");
-                return StatusCode(403, ModelState);
-            }
-                
             var stepMap = _mapper.Map<Step>(stepAdd);
 
             if (!_stepService.AddStep(stepMap))

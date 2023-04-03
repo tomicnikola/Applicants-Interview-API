@@ -8,25 +8,16 @@
         {
             _context = context;
         }
-        public ICollection<JobCategory> AddJobCategory(JobCategory jobCategory)
+        public bool AddJobCategory(JobCategory jobCategory)
         {
-            _context.JobCategories.Add(jobCategory);
-            _context.SaveChanges();
-
-            return _context.JobCategories.ToList();
-
+            _context.Add(jobCategory);
+            return Save();
         }
 
-        public ICollection<JobCategory>? DeleteJobCategory(int id)
+        public bool DeleteJobCategory(JobCategory jobCategory)
         {
-            var jobCategory = _context.JobCategories.Find(id);
-            if (jobCategory == null)
-                return null;
-
-            _context.JobCategories.Remove(jobCategory);
-            _context.SaveChanges();
-
-            return _context.JobCategories.ToList();
+            _context.Remove(jobCategory);
+            return Save();
         }
 
         public ICollection<JobCategory> GetJobCategories()
@@ -43,19 +34,22 @@
             return jobCategory;
         }
 
-        public ICollection<JobCategory>? UpdateJobCategory(JobCategory jobCategoryRequest)
+        public bool JobCategoryExists(int id)
         {
-            var jobCategory = _context.JobCategories.Find(jobCategoryRequest.Id);
-            if (jobCategory is null) 
-                return null;
-
-            jobCategory.Code = jobCategoryRequest.Code;
-            jobCategory.Name = jobCategoryRequest.Name;
-            jobCategory.Description = jobCategoryRequest.Description;
-
-            _context.SaveChanges();
-
-            return _context.JobCategories.ToList();
+            return _context.JobCategories.Any(j => j.Id == id);
         }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
+
+        public bool UpdateJobCategory(JobCategory jobCategory)
+        {
+            _context.Update(jobCategory);
+            return Save();
+        }
+
     }
 }
