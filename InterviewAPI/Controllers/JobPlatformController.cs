@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InterviewAPI.Dto;
+using InterviewAPI.Models;
 using InterviewAPI.Services.JobPlatformService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,28 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPost("jobPlatforms")]
-        public IActionResult AddJobPlatform(JobPlatform jobPlatform)
+        public IActionResult AddJobPlatform([FromBody] JobPlatformDto jobPlatformAdd)
         {
-            var result = _mapper.Map<List<JobPlatformDto>>(_jobPlatformService.AddJobPlatform(jobPlatform));
-            return Ok(result);
+            if (jobPlatformAdd is null)
+                return BadRequest(ModelState);
+
+            var jobPlatform = _jobPlatformService.GetJobPlatform(jobPlatformAdd.Id);
+
+            if (jobPlatform is not null)
+            {
+                ModelState.AddModelError("", "Job platform already exists.");
+                return StatusCode(403, ModelState);
+            }
+
+            var jobPlatformMap = _mapper.Map<JobPlatform>(jobPlatformAdd);
+
+            if (!_jobPlatformService.AddJobPlatform(jobPlatformMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Succesfully added a job platform.");
         }
 
         [HttpGet("jobPlatforms")]
@@ -43,21 +62,40 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPut("jobPlatforms")]
-        public IActionResult UpdateJobPlatform(JobPlatform jobPlatformRequest)
+        public IActionResult UpdateJobPlatform([FromBody] JobPlatformDto jobPlatform)
         {
-            var result = _mapper.Map<List<JobPlatformDto>>(_jobPlatformService.UpdateJobPlatform(jobPlatformRequest));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (jobPlatform is null)
+                return BadRequest(ModelState);
+
+            if (!_jobPlatformService.JobPlatformExists(jobPlatform.Id))
+                return NotFound("Job platform doesn't exist.");
+
+            var jobPlatformMap = _mapper.Map<JobPlatform>(jobPlatform);
+
+            if (!_jobPlatformService.UpdateJobPlatform(jobPlatformMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating job platform");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Job platform succesfully updated.");
         }
 
         [HttpDelete("jobPlatforms/{id}")]
         public IActionResult DeleteJobPlatform(int id)
         {
-            var result = _mapper.Map<List<JobPlatformDto>>(_jobPlatformService.DeleteJobPlatform(id));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (!_jobPlatformService.JobPlatformExists(id))
+                return NotFound("Job platform doesn't exist.");
+
+            var jobPlatformToDelete = _jobPlatformService.GetJobPlatform(id);
+
+            if (!_jobPlatformService.DeleteJobPlatform(jobPlatformToDelete))
+            {
+                ModelState.AddModelError("", "Something went wront deleting job platform");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Job platform succesfully deleted.");
         }
     }
 }

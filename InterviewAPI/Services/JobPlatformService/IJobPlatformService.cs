@@ -2,10 +2,12 @@
 {
     public interface IJobPlatformService
     {
-        ICollection<JobPlatform> AddJobPlatform(JobPlatform jobPlatform);
+        bool AddJobPlatform(JobPlatform jobPlatform);
         ICollection<JobPlatform> GetJobPlatforms();
         JobPlatform? GetJobPlatform(int id);
-        ICollection<JobPlatform>? UpdateJobPlatform(JobPlatform jobPlatformRequest);
-        ICollection<JobPlatform>? DeleteJobPlatform(int id);
+        bool UpdateJobPlatform(JobPlatform jobPlatform);
+        bool DeleteJobPlatform(JobPlatform jobPlatform);
+        bool JobPlatformExists(int id);
+        bool Save();
     }
 }

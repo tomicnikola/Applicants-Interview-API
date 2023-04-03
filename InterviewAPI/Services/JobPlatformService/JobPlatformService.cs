@@ -8,24 +8,16 @@
         {
             _context = context;
         }
-        public ICollection<JobPlatform> AddJobPlatform(JobPlatform jobPlatform)
+        public bool AddJobPlatform(JobPlatform jobPlatform)
         {
-            _context.JobPlatforms.Add(jobPlatform);
-            _context.SaveChanges();
-
-            return _context.JobPlatforms.ToList();
+            _context.Add(jobPlatform);
+            return Save();
         }
 
-        public ICollection<JobPlatform>? DeleteJobPlatform(int id)
+        public bool DeleteJobPlatform(JobPlatform jobPlatform)
         {
-            var jobPlatform = _context.JobPlatforms.Find(id);
-            if (jobPlatform is null)
-                return null;
-            
-            _context.JobPlatforms.Remove(jobPlatform);
-            _context.SaveChanges();
-
-            return _context.JobPlatforms.ToList();
+            _context.Remove(jobPlatform);
+            return Save();
         }
 
         public JobPlatform? GetJobPlatform(int id)
@@ -42,18 +34,22 @@
             return jobPlatforms;
         }
 
-        public ICollection<JobPlatform>? UpdateJobPlatform(JobPlatform jobPlatformRequest)
+        public bool JobPlatformExists(int id)
         {
-            var jobPlatform = _context.JobPlatforms.Find(jobPlatformRequest.Id);
-            if (jobPlatform is null)
-                return null;
-
-            jobPlatform.Code = jobPlatformRequest.Code;
-            jobPlatform.Name = jobPlatformRequest.Name;
-            jobPlatform.Description = jobPlatformRequest.Description;
-
-            _context.SaveChanges();
-            return _context.JobPlatforms.ToList();
+            return _context.JobPlatforms.Any(j => j.Id == id);
         }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
+
+        public bool UpdateJobPlatform(JobPlatform jobPlatform)
+        {
+            _context.Update(jobPlatform);
+            return Save();
+        }
+
     }
 }
