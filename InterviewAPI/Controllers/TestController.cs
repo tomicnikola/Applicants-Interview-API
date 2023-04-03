@@ -71,7 +71,7 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPut("tests")]
-        public IActionResult UpdateTest(Test test)
+        public IActionResult UpdateTest([FromBody]TestDto test)
         {
             if (test is null)
                 return BadRequest(ModelState);

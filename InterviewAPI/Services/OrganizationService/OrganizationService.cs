@@ -8,24 +8,16 @@
         {
             _context = context;
         }
-        public ICollection<Organization> AddOrganization(Organization organization)
+        public bool AddOrganization(Organization organization)
         {
-            _context.Organizations.Add(organization);
-            _context.SaveChanges();
-
-            return _context.Organizations.ToList();
+            _context.Add(organization);
+            return Save();
         }
 
-        public ICollection<Organization>? DeleteOrganization(int id)
+        public bool DeleteOrganization(Organization organization)
         {
-            var organization = _context.Organizations.Find(id);
-            if (organization is null)
-                return null;
-            
-            _context.Organizations.Remove(organization);
-            _context.SaveChanges();
-
-            return _context.Organizations.ToList();
+            _context.Remove(organization); 
+            return Save();
         }
 
         public Organization? GetOrganization(int id)
@@ -42,18 +34,22 @@
             return organizations;
         }
 
-        public ICollection<Organization>? UpdateOrganization(Organization organizationRequest)
+        public bool OrganizationExists(int id)
         {
-            var organization = _context.Organizations.Find(organizationRequest.Id);
-            if (organization is null)
-                return null;
-
-            organization.Code = organizationRequest.Code;
-            organization.Name = organizationRequest.Name;
-            organization.Description = organizationRequest.Description;
-
-            _context.SaveChanges();
-            return _context.Organizations.ToList();
+            return _context.Organizations.Any(o => o.Id == id);
         }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
+
+        public bool UpdateOrganization(Organization organization)
+        {
+            _context.Update(organization);
+            return Save();
+        }
+
     }
 }

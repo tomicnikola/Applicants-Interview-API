@@ -84,17 +84,17 @@ namespace InterviewAPI.Controllers
         public IActionResult DeleteRecruiter(int id)
         {
             if (!_recruiterService.RecruiterExists(id))
-                return NotFound("Test doesn't exist.");
+                return NotFound("Recruiter doesn't exist.");
 
             var recruiterToDelete = _recruiterService.GetRecruiter(id);
 
             if (!_recruiterService.DeleteRecruiter(recruiterToDelete))
             {
-                ModelState.AddModelError("", "Something went wront deleting step");
+                ModelState.AddModelError("", "Something went wront deleting recruiter");
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Test succesfully deleted.");
+            return Ok("Recruiter succesfully deleted.");
         }
     }
 }

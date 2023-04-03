@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InterviewAPI.Dto;
+using InterviewAPI.Models;
 using InterviewAPI.Services.OrganizationService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,28 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPost("organizations")]
-        public IActionResult AddOrganization(Organization organization)
+        public IActionResult AddOrganization([FromBody] OrganizationDto organizationAdd)
         {
-            var result = _mapper.Map<List<OrganizationDto>>(_organizationService.AddOrganization(organization));
-            return Ok(result);
+            if (organizationAdd is null)
+                return BadRequest(ModelState);
+
+            var organization = _organizationService.GetOrganization(organizationAdd.Id);
+
+            if (organization is not null)
+            {
+                ModelState.AddModelError("", "Organization already exists.");
+                return StatusCode(403, ModelState);
+            }
+
+            var organizationMap = _mapper.Map<Organization>(organizationAdd);
+
+            if (!_organizationService.AddOrganization(organizationMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Succesfully added a organization.");
         }
 
         [HttpGet("organizations")]
@@ -43,21 +62,40 @@ namespace InterviewAPI.Controllers
         }
 
         [HttpPut("organizations")]
-        public IActionResult UpdateOrganization(Organization organization)
+        public IActionResult UpdateOrganization([FromBody] OrganizationDto organization)
         {
-            var result = _mapper.Map<List<OrganizationDto>>(_organizationService.UpdateOrganization(organization));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (organization is null)
+                return BadRequest(ModelState);
+
+            if (!_organizationService.OrganizationExists(organization.Id))
+                return NotFound("Organization doesn't exist.");
+
+            var organizationMap = _mapper.Map<Organization>(organization);
+
+            if (!_organizationService.UpdateOrganization(organizationMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating organization");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Organization succesfully updated.");
         }
 
         [HttpDelete("organizations/{id}")]
         public IActionResult DeleteOrganization(int id)
         {
-            var result = _mapper.Map<List<OrganizationDto>>(_organizationService.DeleteOrganization(id));
-            if (result is null)
-                return NotFound("Invalid id, try again.");
-            return Ok(result);
+            if (!_organizationService.OrganizationExists(id))
+                return NotFound("Organization doesn't exist.");
+
+            var organizationToDelete = _organizationService.GetOrganization(id);
+
+            if (!_organizationService.DeleteOrganization(organizationToDelete))
+            {
+                ModelState.AddModelError("", "Something went wront deleting organization");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Organization succesfully deleted.");
         }
     }
 }

@@ -53,9 +53,9 @@
             return _context.Tests.Any(t => t.Id == id);
         }
 
-        public bool UpdateTest(Test testRequest)
+        public bool UpdateTest(Test test)
         {
-            _context.Update(testRequest);
+            _context.Update(test);
             return Save();
         }
     }
